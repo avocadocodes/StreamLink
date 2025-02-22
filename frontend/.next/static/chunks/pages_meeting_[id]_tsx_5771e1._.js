@@ -8,7 +8,7 @@
     "static/chunks/node_modules_next_71458a._.js",
     "static/chunks/node_modules_react-dom_82bb97._.js",
     "static/chunks/node_modules_webrtc-adapter_src_js_2df023._.js",
-    "static/chunks/node_modules_a264c9._.js",
+    "static/chunks/node_modules_6dec87._.js",
     "static/chunks/[root of the server]__6ff77d._.js"
   ],
   "source": "entry"
