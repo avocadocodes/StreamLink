@@ -1,9 +1,11 @@
+import os
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from typing import Dict, List
 
 signaling_router = APIRouter()
-
-active_meetings: Dict[str, List[WebSocket]] = {}
+WEBSOCKET_HOST = os.getenv("WEBSOCKET_HOST", "0.0.0.0")
+WEBSOCKET_PORT = int(os.getenv("WEBSOCKET_PORT", 8000))
+active_meetings = {}
 
 @signaling_router.websocket("/ws/{meeting_id}/{peer_id}")
 async def websocket_endpoint(websocket: WebSocket, meeting_id: str, peer_id: str):

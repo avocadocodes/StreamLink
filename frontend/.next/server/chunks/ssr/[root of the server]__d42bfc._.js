@@ -149,14 +149,6 @@ const mod = __turbopack_external_require__("react-dom", () => require("react-dom
 
 module.exports = mod;
 }}),
-"[externals]/peerjs [external] (peerjs, cjs)": (function(__turbopack_context__) {
-
-var { r: __turbopack_require__, f: __turbopack_module_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, M: __turbopack_modules__, l: __turbopack_load__, j: __turbopack_dynamic__, P: __turbopack_resolve_absolute_path__, U: __turbopack_relative_url__, R: __turbopack_resolve_module_id_path__, b: __turbopack_worker_blob_url__, g: global, __dirname, x: __turbopack_external_require__, y: __turbopack_external_import__, m: module, e: exports, t: __turbopack_require_real__ } = __turbopack_context__;
-{
-const mod = __turbopack_external_require__("peerjs", () => require("peerjs"));
-
-module.exports = mod;
-}}),
 "[project]/pages/meeting/[id].tsx [ssr] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
 
@@ -168,8 +160,6 @@ __turbopack_esm__({
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__ = __turbopack_import__("[externals]/react/jsx-dev-runtime [external] (react/jsx-dev-runtime, cjs)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/router.js [ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__ = __turbopack_import__("[externals]/react [external] (react, cjs)");
-var __TURBOPACK__imported__module__$5b$externals$5d2f$peerjs__$5b$external$5d$__$28$peerjs$2c$__cjs$29$__ = __turbopack_import__("[externals]/peerjs [external] (peerjs, cjs)");
-;
 ;
 ;
 ;
@@ -181,55 +171,48 @@ const MeetingPage = ()=>{
     const [meetingLink, setMeetingLink] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null);
     const [copied, setCopied] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [isMuted, setIsMuted] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
+    const [localStream, setLocalStream] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null);
     const [isVideoOff, setIsVideoOff] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const myVideoRef = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useRef"])(null);
     const remoteVideosRef = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useRef"])({});
-    let localStream;
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
         if (!meetingId) return;
         const websocketURL = ("TURBOPACK compile-time value", "https://streamlink-837q.onrender.com") || "ws://localhost:8000";
-        const frontendURL = ("TURBOPACK compile-time value", "https://streamlink-sigma.vercel.app/") || "http://localhost:3000";
-        setMeetingLink(`${frontendURL}/meeting/${meetingId}`);
         const userPeerId = Math.random().toString(36).substring(7);
         const newSocket = new WebSocket(`${websocketURL}/ws/${meetingId}/${userPeerId}`);
-        setSocket(newSocket);
         navigator.mediaDevices.getUserMedia({
             video: true,
             audio: true
         }).then((stream)=>{
-            localStream = stream;
+            setLocalStream(stream);
             if (myVideoRef.current) {
                 myVideoRef.current.srcObject = stream;
             }
-        }).catch((error)=>console.error("Camera/Microphone Error:", error));
-        const newPeer = new __TURBOPACK__imported__module__$5b$externals$5d2f$peerjs__$5b$external$5d$__$28$peerjs$2c$__cjs$29$__["default"]();
-        setPeer(newPeer);
-        newPeer.on("open", (id)=>{
-            console.log(`Peer ID: ${id}`);
+        }).catch((error)=>console.error("❌ Camera/Microphone Error:", error));
+        newSocket.onopen = ()=>{
+            console.log("✅ WebSocket Connected!");
             newSocket.send(JSON.stringify({
                 type: "new-user",
-                peerId: id
-            }));
-        });
-        newPeer.on("call", (call)=>{
-            console.log("Answering incoming call...");
-            call.answer(localStream);
-            call.on("stream", (remoteStream)=>{
-                console.log("Received Remote Stream");
-                addRemoteVideo(call.peer, remoteStream);
-            });
-        });
+                peerId: userPeerId
+            })); // ✅ Now it's safe to send
+        };
         newSocket.onmessage = (event)=>{
             const data = JSON.parse(event.data);
-            console.log("WebSocket Message:", data);
-            if (data.type === "new-user" && data.peerId !== newPeer.id) {
-                console.log(`New participant joined: ${data.peerId}`);
+            console.log("📩 WebSocket Message:", data);
+            if (data.type === "new-user" && data.peerId !== userPeerId) {
+                console.log(`🔔 New participant joined: ${data.peerId}`);
                 callUser(data.peerId);
             }
         };
+        newSocket.onerror = (error)=>{
+            console.error("❌ WebSocket Error:", error);
+        };
+        newSocket.onclose = ()=>{
+            console.log("❌ WebSocket Closed!");
+        };
+        setSocket(newSocket);
         return ()=>{
             newSocket.close();
-            newPeer.destroy();
         };
     }, [
         meetingId
@@ -296,7 +279,7 @@ const MeetingPage = ()=>{
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/meeting/[id].tsx",
-                lineNumber: 135,
+                lineNumber: 127,
                 columnNumber: 7
             }, this),
             meetingLink && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -307,7 +290,7 @@ const MeetingPage = ()=>{
                         children: "Share this link:"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 139,
+                        lineNumber: 131,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -318,7 +301,7 @@ const MeetingPage = ()=>{
                                 children: meetingLink
                             }, void 0, false, {
                                 fileName: "[project]/pages/meeting/[id].tsx",
-                                lineNumber: 141,
+                                lineNumber: 133,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -327,19 +310,19 @@ const MeetingPage = ()=>{
                                 children: copied ? "Copied!" : "Copy"
                             }, void 0, false, {
                                 fileName: "[project]/pages/meeting/[id].tsx",
-                                lineNumber: 142,
+                                lineNumber: 134,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 140,
+                        lineNumber: 132,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/meeting/[id].tsx",
-                lineNumber: 138,
+                lineNumber: 130,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -352,7 +335,7 @@ const MeetingPage = ()=>{
                         className: "w-48 h-32 border rounded-lg"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 153,
+                        lineNumber: 145,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -360,13 +343,13 @@ const MeetingPage = ()=>{
                         className: "flex space-x-2"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 154,
+                        lineNumber: 146,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/meeting/[id].tsx",
-                lineNumber: 152,
+                lineNumber: 144,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -378,7 +361,7 @@ const MeetingPage = ()=>{
                         children: isMuted ? "Unmute Mic" : "Mute Mic"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 157,
+                        lineNumber: 149,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -387,7 +370,7 @@ const MeetingPage = ()=>{
                         children: isVideoOff ? "Turn On Camera" : "Turn Off Camera"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 164,
+                        lineNumber: 156,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -396,19 +379,19 @@ const MeetingPage = ()=>{
                         children: "Leave Call"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 171,
+                        lineNumber: 163,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/meeting/[id].tsx",
-                lineNumber: 156,
+                lineNumber: 148,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/pages/meeting/[id].tsx",
-        lineNumber: 134,
+        lineNumber: 126,
         columnNumber: 5
     }, this);
 };
@@ -417,4 +400,4 @@ const __TURBOPACK__default__export__ = MeetingPage;
 
 };
 
-//# sourceMappingURL=%5Broot%20of%20the%20server%5D__c3c781._.js.map
+//# sourceMappingURL=%5Broot%20of%20the%20server%5D__d42bfc._.js.map
