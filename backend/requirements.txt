@@ -4,3 +4,4 @@ python-dotenv
 websockets
 pydantic
 motor
+python-jose[cryptography]
