@@ -334,6 +334,7 @@ function Home() {
     const { user } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["useAuth"])();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
     const [meetingId, setMeetingId] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("");
+    const backendURL = ("TURBOPACK compile-time value", "http://localhost:8000/");
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
         console.log("👤 Current User in Context:", user);
     }, [
@@ -351,7 +352,7 @@ function Home() {
         }
         const newMeetingId = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$uuid__$5b$external$5d$__$28$uuid$2c$__esm_import$29$__["v4"])(); // Generate a unique meeting ID
         try {
-            const res = await __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].post("NEXT_PUBLIC_BACKEND_URL/start-meeting", {
+            const res = await __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].post(`${backendURL}/start-meeting`, {
                 meeting_id: newMeetingId,
                 username: user.username
             }, {
@@ -377,7 +378,7 @@ function Home() {
     // };
     const joinMeeting = async ()=>{
         try {
-            const res = await __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].post("NEXT_PUBLIC_BACKEND_URL/join-meeting", {
+            const res = await __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].post(`${backendURL}/join-meeting`, {
                 meetingId
             });
             console.log("Meeting joined:", res.data);
@@ -469,6 +470,22 @@ function Home() {
                     }, void 0, false, {
                         fileName: "[project]/pages/index.tsx",
                         lineNumber: 86,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
+                        onClick: ()=>router.push("/register"),
+                        style: {
+                            padding: "10px 20px",
+                            fontSize: "16px",
+                            backgroundColor: "green",
+                            color: "white",
+                            borderRadius: "5px",
+                            cursor: "pointer"
+                        },
+                        children: "Register"
+                    }, void 0, false, {
+                        fileName: "[project]/pages/index.tsx",
+                        lineNumber: 100,
                         columnNumber: 11
                     }, this)
                 ]

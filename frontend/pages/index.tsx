@@ -9,7 +9,7 @@ export default function Home() {
   const { user } = useAuth();
   const router = useRouter();
   const [meetingId, setMeetingId] = useState("");
-
+  const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL;
   useEffect(() => {
     console.log("👤 Current User in Context:", user);
   }, [user]);
@@ -30,7 +30,7 @@ export default function Home() {
 
     try {
         const res = await axios.post(
-            "NEXT_PUBLIC_BACKEND_URL/start-meeting",
+            `${backendURL}/start-meeting`,
             { meeting_id: newMeetingId, username: user.username }, // ✅ Ensure correct fields
             { headers: { Authorization: `Bearer ${token}` } } // ✅ Ensure token is included
         );
@@ -54,7 +54,7 @@ export default function Home() {
   // };
   const joinMeeting = async () => {
     try {
-      const res = await axios.post("NEXT_PUBLIC_BACKEND_URL/join-meeting", { meetingId });
+      const res = await axios.post(`${backendURL}/join-meeting`, { meetingId });
       console.log("Meeting joined:", res.data);
     } catch (error) {
       console.error("Error joining meeting:", error);
@@ -96,6 +96,19 @@ export default function Home() {
             }}
           >
             Login
+          </button>
+          <button
+            onClick={() => router.push("/register")} // ✅ Redirect to Register Page
+            style={{
+              padding: "10px 20px",
+              fontSize: "16px",
+              backgroundColor: "green",
+              color: "white",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Register
           </button>
         </>
       )}

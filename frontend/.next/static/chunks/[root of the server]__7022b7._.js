@@ -727,7 +727,7 @@ const MeetingPage = ()=>{
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "MeetingPage.useEffect": ()=>{
             if (!meetingId || !user) return; // ✅ Ensure user is available before using it
-            const websocketURL = ("TURBOPACK compile-time value", "https://streamlink-837q.onrender.com") || "ws://localhost:8000";
+            const websocketURL = ("TURBOPACK compile-time value", "http://localhost:8000/") || "ws://localhost:8000";
             const frontendURL = ("TURBOPACK compile-time value", "http://localhost:3001/") || "http://localhost:3000";
             setMeetingLink(`${frontendURL}/meeting/${meetingId}`);
             const userPeerId = Math.random().toString(36).substring(7);

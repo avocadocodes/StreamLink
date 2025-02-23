@@ -8,11 +8,11 @@ const RegisterPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
+  const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("NEXT_PUBLIC_BACKEND_URL/register", {
+      await axios.post(`${backendURL}/register`, {
         email,
         username,
         password,
