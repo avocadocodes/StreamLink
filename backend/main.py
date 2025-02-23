@@ -24,7 +24,7 @@ router = APIRouter()
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3001"],  # ✅ Only allow your frontend
+    allow_origins=["*"],  # ✅ Only allow your frontend
     allow_credentials=True,  # ✅ Required for cookies and Authorization headers
     allow_methods=["*"],
     allow_headers=["*"],
