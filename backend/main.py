@@ -42,6 +42,7 @@ class StartMeetingRequest(BaseModel):
 
 app.include_router(auth_router)  
 app.include_router(signaling_router)
+app.include_router(router)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
@@ -91,6 +92,6 @@ async def join_meeting(meeting: MeetingSchema, current_user: dict = Depends(get_
 def read_root():
     return {"message": "Backend is running!"}
 
+
 if __name__ == "__main__":
     multiprocessing.set_start_method("spawn")
-app.include_router(router)
