@@ -1,7 +1,7 @@
-# **SuperSoul Video Calling App**
+# **StreamLink : A Video Calling App for SuperSoul**
 
 ## 🚀 **Overview**
-SuperSoul is a **full-stack video calling application** similar to Google Meet, built using:
+StreamLink is a **full-stack video calling application** similar to Google Meet, built using:
 - **Frontend**: Next.js (TypeScript, Tailwind CSS)
 - **Backend**: FastAPI (Python, MongoDB, WebSockets, JWT Authentication)
 - **Deployment**: Vercel (Frontend), Render (Backend)
