@@ -1,7 +1,7 @@
 import os
 import multiprocessing
 from dotenv import load_dotenv
-from fastapi import FastAPI,APIRouter, HTTPException, Depends
+from fastapi import FastAPI,APIRouter, HTTPException, Depends, Response
 from pydantic import BaseModel
 from database import get_meetings_collection
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,29 +14,26 @@ from models import MeetingSchema
 import logging
 from fastapi.responses import JSONResponse
 
-# Load Environment Variables
 load_dotenv()
 MONGO_URI = os.getenv("DATABASE_URL")
 client = MongoClient(MONGO_URI)
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 
-# App Initialization
 app = FastAPI()
 router = APIRouter()
 
-# CORS Middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         FRONTEND_URL,
+        "https://streamlink-sigma.vercel.app",
     ], 
-    allow_credentials=True,  # ✅ Required for cookies and Authorization headers
+    allow_credentials=True, 
     allow_methods=["*"],
     allow_headers=["*"],
 )
 logging.basicConfig(level=logging.DEBUG)
 
-# Meeting Request Model
 class StartMeetingRequest(BaseModel):
     meeting_id: str
     username: str
@@ -44,13 +41,18 @@ class StartMeetingRequest(BaseModel):
 app.include_router(auth_router)  
 app.include_router(signaling_router)
 app.include_router(router)
-
+@app.middleware("http")
+async def add_cors_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["Access-Control-Allow-Origin"] = "https://streamlink-sigma.vercel.app"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
-    logging.error(f"🔥 Internal Server Error: {exc}")  # ✅ Print error in logs
+    logging.error(f"Internal Server Error: {exc}")  
     return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 
-# ✅ Start a Meeting
 @router.post("/start-meeting")
 async def start_meeting(meeting: MeetingSchema, current_user: dict = Depends(get_current_user)):
     meetings_collection = get_meetings_collection()

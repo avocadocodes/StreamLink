@@ -3,7 +3,6 @@ import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 
-// ✅ Use Axios Instance with Token Interceptor
 const api = axios.create({
   baseURL:process.env.NEXT_PUBLIC_BACKEND_URL,
   withCredentials: true,
@@ -40,7 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) {
-      api.get("/user") // ✅ Use `api.get()` instead of `axios.get()`
+      api.get("/user") 
         .then((res) => {
           console.log("✅ User Data:", res.data);
           setUser(res.data);
@@ -66,7 +65,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const token = res.data.access_token;
       Cookies.set("token", token, { expires: 7 });
 
-      // ✅ Fetch user immediately after login using `api`
       const userRes = await api.get("/user");
       setUser(userRes.data);
       console.log("🔓 Logged in successfully!", userRes.data);
