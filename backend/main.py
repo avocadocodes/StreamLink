@@ -18,6 +18,7 @@ from fastapi.responses import JSONResponse
 load_dotenv()
 MONGO_URI = os.getenv("DATABASE_URL")
 client = MongoClient(MONGO_URI)
+FRONTEND_URL = os.getenv("FRONTEND_URL")
 
 # App Initialization
 app = FastAPI()
@@ -27,7 +28,7 @@ router = APIRouter()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "FRONTEND_URL",
+        FRONTEND_URL,
     ], 
     allow_credentials=True,  # ✅ Required for cookies and Authorization headers
     allow_methods=["*"],
