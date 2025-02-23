@@ -12,7 +12,7 @@ const RegisterPage = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8000/register", {
+      await axios.post("NEXT_PUBLIC_BACKEND_URL/register", {
         email,
         username,
         password,

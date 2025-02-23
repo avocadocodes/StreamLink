@@ -574,7 +574,7 @@ var _s = __turbopack_refresh__.signature(), _s1 = __turbopack_refresh__.signatur
 ;
 // ✅ Use Axios Instance with Token Interceptor
 const api = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].create({
-    baseURL: ("TURBOPACK compile-time value", "https://streamlink-837q.onrender.com"),
+    baseURL: ("TURBOPACK compile-time value", "http://localhost:8000/"),
     withCredentials: true
 });
 api.interceptors.request.use((config)=>{
@@ -728,7 +728,7 @@ const MeetingPage = ()=>{
         "MeetingPage.useEffect": ()=>{
             if (!meetingId || !user) return; // ✅ Ensure user is available before using it
             const websocketURL = ("TURBOPACK compile-time value", "https://streamlink-837q.onrender.com") || "ws://localhost:8000";
-            const frontendURL = ("TURBOPACK compile-time value", "https://streamlink-sigma.vercel.app/") || "http://localhost:3000";
+            const frontendURL = ("TURBOPACK compile-time value", "http://localhost:3001/") || "http://localhost:3000";
             setMeetingLink(`${frontendURL}/meeting/${meetingId}`);
             const userPeerId = Math.random().toString(36).substring(7);
             const newSocket = new WebSocket(`${websocketURL}/ws/${meetingId}/${userPeerId}`);

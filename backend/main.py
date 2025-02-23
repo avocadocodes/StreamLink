@@ -27,9 +27,8 @@ router = APIRouter()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3001", 
-        "https://streamlink-sigma.vercel.app", 
-    ],  # ✅ Only allow your frontend
+        "FRONTEND_URL",
+    ], 
     allow_credentials=True,  # ✅ Required for cookies and Authorization headers
     allow_methods=["*"],
     allow_headers=["*"],

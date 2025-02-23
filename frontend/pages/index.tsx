@@ -30,7 +30,7 @@ export default function Home() {
 
     try {
         const res = await axios.post(
-            "http://localhost:8000/start-meeting",
+            "NEXT_PUBLIC_BACKEND_URL/start-meeting",
             { meeting_id: newMeetingId, username: user.username }, // ✅ Ensure correct fields
             { headers: { Authorization: `Bearer ${token}` } } // ✅ Ensure token is included
         );
@@ -54,7 +54,7 @@ export default function Home() {
   // };
   const joinMeeting = async () => {
     try {
-      const res = await axios.post("http://localhost:8000/join-meeting", { meetingId });
+      const res = await axios.post("NEXT_PUBLIC_BACKEND_URL/join-meeting", { meetingId });
       console.log("Meeting joined:", res.data);
     } catch (error) {
       console.error("Error joining meeting:", error);

@@ -112,7 +112,7 @@ var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
 ;
 // ✅ Use Axios Instance with Token Interceptor
 const api = __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].create({
-    baseURL: ("TURBOPACK compile-time value", "https://streamlink-837q.onrender.com"),
+    baseURL: ("TURBOPACK compile-time value", "http://localhost:8000/"),
     withCredentials: true
 });
 api.interceptors.request.use((config)=>{

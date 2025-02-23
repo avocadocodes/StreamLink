@@ -574,7 +574,7 @@ var _s = __turbopack_refresh__.signature(), _s1 = __turbopack_refresh__.signatur
 ;
 // ✅ Use Axios Instance with Token Interceptor
 const api = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].create({
-    baseURL: ("TURBOPACK compile-time value", "https://streamlink-837q.onrender.com"),
+    baseURL: ("TURBOPACK compile-time value", "http://localhost:8000/"),
     withCredentials: true
 });
 api.interceptors.request.use((config)=>{

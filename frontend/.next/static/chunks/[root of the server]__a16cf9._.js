@@ -574,7 +574,7 @@ var _s = __turbopack_refresh__.signature(), _s1 = __turbopack_refresh__.signatur
 ;
 // ✅ Use Axios Instance with Token Interceptor
 const api = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].create({
-    baseURL: ("TURBOPACK compile-time value", "https://streamlink-837q.onrender.com"),
+    baseURL: ("TURBOPACK compile-time value", "http://localhost:8000/"),
     withCredentials: true
 });
 api.interceptors.request.use((config)=>{
@@ -721,7 +721,7 @@ function Home() {
         }
         const newMeetingId = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$uuid$2f$dist$2f$esm$2d$browser$2f$v4$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__v4$3e$__["v4"])(); // Generate a unique meeting ID
         try {
-            const res = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].post("http://localhost:8000/start-meeting", {
+            const res = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].post("NEXT_PUBLIC_BACKEND_URL/start-meeting", {
                 meeting_id: newMeetingId,
                 username: user.username
             }, {
@@ -747,7 +747,7 @@ function Home() {
     // };
     const joinMeeting = async ()=>{
         try {
-            const res = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].post("http://localhost:8000/join-meeting", {
+            const res = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].post("NEXT_PUBLIC_BACKEND_URL/join-meeting", {
                 meetingId
             });
             console.log("Meeting joined:", res.data);
