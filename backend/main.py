@@ -11,6 +11,8 @@ from signaling import signaling_router
 from pymongo import MongoClient
 from auth import get_current_user
 from models import MeetingSchema
+import logging
+from fastapi.responses import JSONResponse
 
 # Load Environment Variables
 load_dotenv()
@@ -24,11 +26,15 @@ router = APIRouter()
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # ✅ Only allow your frontend
+    allow_origins=[
+        "http://localhost:3001", 
+        "https://streamlink-sigma.vercel.app", 
+    ],  # ✅ Only allow your frontend
     allow_credentials=True,  # ✅ Required for cookies and Authorization headers
     allow_methods=["*"],
     allow_headers=["*"],
 )
+logging.basicConfig(level=logging.DEBUG)
 
 # Meeting Request Model
 class StartMeetingRequest(BaseModel):
@@ -37,6 +43,11 @@ class StartMeetingRequest(BaseModel):
 
 app.include_router(auth_router)  
 app.include_router(signaling_router)
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    logging.error(f"🔥 Internal Server Error: {exc}")  # ✅ Print error in logs
+    return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 
 # ✅ Start a Meeting
 @router.post("/start-meeting")
