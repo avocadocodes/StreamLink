@@ -1,33 +1,51 @@
-import { useContext, useState} from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useRouter } from "next/router";
 
-const Login = () => {
-  const authContext = useContext(AuthContext);
-  if (!authContext) throw new Error("AuthContext must be used within an AuthProvider");
-
-  const { login } = authContext;
+const LoginPage = () => {
+  const auth = useContext(AuthContext);
   const router = useRouter();
-  const [email, setEmail] = useState("");
+
+  if (!auth) {
+    return <p>Loading...</p>;
+  }
+
+  const { login } = auth;
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!login) return;
-    await login(email, password);
-    router.push("/dashboard");
+    await login(username, password);
+    router.push("/");
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required />
-        <button type="submit">Login</button>
+    <div className="flex flex-col items-center justify-center h-screen">
+      <h1 className="text-2xl font-bold">Login</h1>
+      <form onSubmit={handleLogin} className="mt-6">
+        <input
+          type="text"
+          placeholder="Username"
+          className="border p-2 m-2"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="border p-2 m-2"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button className="bg-blue-500 text-white px-4 py-2 rounded mt-2">
+          Login
+        </button>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default LoginPage;

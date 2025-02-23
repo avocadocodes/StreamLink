@@ -1,52 +1,88 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import { v4 as uuidv4 } from "uuid";
+import axios, { AxiosError } from "axios";
+import Cookies from "js-cookie";
 
-const Home = () => {
+export default function Home() {
+  const { user } = useAuth();
   const router = useRouter();
   const [meetingId, setMeetingId] = useState("");
 
-  // Function to start a new meeting
-  const startMeeting = () => {
-    const newMeetingId = uuidv4(); // Generate unique meeting ID
-    router.push(`/meeting/${newMeetingId}`); // Redirect to meeting page
-  };
+  useEffect(() => {
+    console.log("👤 Current User in Context:", user);
+  }, [user]);
 
-  // Function to join an existing meeting
-  const joinMeeting = () => {
-    if (meetingId.trim()) {
-      router.push(`/meeting/${meetingId}`);
+  const startMeeting = async () => {
+    if (!user) {
+        alert("Please log in first.");
+        return;
     }
-  };
 
-  return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-6">Welcome to SuperSoul Video Meet</h1>
+    const token = Cookies.get("token");
+    if (!token) {
+        alert("Authentication failed. Please log in again.");
+        return;
+    }
 
-      <button 
-        className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mb-4"
-        onClick={startMeeting}
-      >
-        Start a New Meeting
-      </button>
+    const newMeetingId = uuidv4(); // Generate a unique meeting ID
 
-      <div className="flex space-x-2">
-        <input
-          type="text"
-          placeholder="Enter Meeting ID"
-          value={meetingId}
-          onChange={(e) => setMeetingId(e.target.value)}
-          className="p-2 border border-gray-300 rounded-md"
-        />
-        <button 
-          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-          onClick={joinMeeting}
-        >
-          Join Meeting
-        </button>
-      </div>
-    </div>
-  );
+    try {
+        const res = await axios.post(
+            "http://localhost:8000/start-meeting",
+            { meeting_id: newMeetingId, username: user.username }, // ✅ Ensure correct fields
+            { headers: { Authorization: `Bearer ${token}` } } // ✅ Ensure token is included
+        );
+
+        console.log("✅ Meeting Created:", res.data);
+        router.push(`/meeting/${res.data.meeting_id}`);
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      console.error("❌ Failed to start meeting:", axiosError.response?.data || axiosError.message);
+        alert("Error starting meeting. Please try again.");
+    }
 };
 
-export default Home;
+
+  // const joinMeeting = () => {
+  //   if (!meetingId) {
+  //     alert("Enter a valid Meeting ID.");
+  //     return;
+  //   }
+  //   router.push(`/meeting/${meetingId}`);
+  // };
+  const joinMeeting = async () => {
+    try {
+      const res = await axios.post("http://localhost:8000/join-meeting", { meetingId });
+      console.log("Meeting joined:", res.data);
+    } catch (error) {
+      console.error("Error joining meeting:", error);
+    }
+  };
+  
+
+  return (
+    <div style={{ textAlign: "center", padding: "50px" }}>
+      <h1>Welcome to SuperSoul Meetings</h1>
+      {user ? (
+        <>
+          <button onClick={startMeeting} style={{ padding: "10px", fontSize: "16px" }}>
+            Start a New Meeting
+          </button>
+          <div style={{ marginTop: "20px" }}>
+            <input
+              type="text"
+              value={meetingId}
+              onChange={(e) => setMeetingId(e.target.value)}
+              placeholder="Enter Meeting ID"
+            />
+            <button onClick={joinMeeting}>Join Meeting</button>
+          </div>
+        </>
+      ) : (
+        <p style={{ color: "red" }}>🚫 You must log in to start or join a meeting.</p>
+      )}
+    </div>
+  );
+}

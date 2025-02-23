@@ -565,7 +565,7 @@ function App({ Component, pageProps }) {
         ...pageProps
     }, void 0, false, {
         fileName: "[project]/pages/_app.tsx",
-        lineNumber: 5,
+        lineNumber: 6,
         columnNumber: 10
     }, this);
 }

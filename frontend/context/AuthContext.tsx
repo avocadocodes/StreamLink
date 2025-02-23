@@ -1,53 +1,87 @@
-import { createContext, useState, useEffect, ReactNode } from "react";
-import axios from "axios";
+import { createContext, useState, useEffect, ReactNode, useContext } from "react";
+import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
+import { useRouter } from "next/router";
+
+// ✅ Use Axios Instance with Token Interceptor
+const api = axios.create({
+  baseURL: "http://localhost:8000",
+  withCredentials: true,
+});
+
+api.interceptors.request.use((config) => {
+  const token = Cookies.get("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export { api };
 
 interface User {
-    email: string;
-    username: string;
-  }
+  id: string;
+  username: string;
+  email: string;
+}
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (identifier: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType>({
-    user: null,
-    login: async () => {},
-    logout: () => {},
-  });
-  
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const token = Cookies.get("token");
-    if (token) fetchProfile(token);
+    if (token) {
+      api.get("/user") // ✅ Use `api.get()` instead of `axios.get()`
+        .then((res) => {
+          console.log("✅ User Data:", res.data);
+          setUser(res.data);
+        })
+        .catch((error) => {
+          console.error("❌ Failed to fetch user:", error.response?.data || error.message);
+          Cookies.remove("token");
+          setUser(null);
+        });
+    }
   }, []);
 
-  const fetchProfile = async (token: string) => {
+  const login = async (identifier: string, password: string) => {
     try {
-      const res = await axios.get("http://localhost:8000/users/profile", {
-        headers: { Authorization: `Bearer ${token}` },
+      const formData = new FormData();
+      formData.append("username", identifier);
+      formData.append("password", password);
+  
+      const res = await api.post("/token", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      setUser(res.data);
-    } catch (error) {
-      console.error("Failed to fetch user profile", error);
-    }
-  };
 
-  const login = async (email: string, password: string) => {
-    const res = await axios.post("http://localhost:8000/auth/login", { email, password });
-    Cookies.set("token", res.data.access_token, { expires: 1 });
-    fetchProfile(res.data.access_token);
+      const token = res.data.access_token;
+      Cookies.set("token", token, { expires: 7 });
+
+      // ✅ Fetch user immediately after login using `api`
+      const userRes = await api.get("/user");
+      setUser(userRes.data);
+      console.log("🔓 Logged in successfully!", userRes.data);
+      router.push("/");
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      console.error("❌ Login Error:", axiosError.response?.data || axiosError.message);
+      alert("Invalid credentials. Please try again.");
+    }
   };
 
   const logout = () => {
     Cookies.remove("token");
     setUser(null);
+    router.push("/login");
   };
 
   return (
@@ -55,4 +89,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+// Custom hook for easier access to AuthContext
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };

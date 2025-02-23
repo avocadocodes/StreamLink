@@ -178,13 +178,41 @@ const MeetingPage = ()=>{
     const { id: meetingId } = router.query;
     const [peer, setPeer] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null);
     const [socket, setSocket] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null);
+    const [localStream, setLocalStream] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null); // ✅ Store stream in state
     const [meetingLink, setMeetingLink] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null);
     const [copied, setCopied] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [isMuted, setIsMuted] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [isVideoOff, setIsVideoOff] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const myVideoRef = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useRef"])(null);
     const remoteVideosRef = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useRef"])({});
-    let localStream;
+    const [isAdmin, setIsAdmin] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
+    const [pendingUsers, setPendingUsers] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])([]);
+    (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
+        if (!socket || !peer) return;
+        socket.onmessage = (event)=>{
+            const data = JSON.parse(event.data);
+            if (data.type === "approval-request" && isAdmin) {
+                setPendingUsers((prev)=>[
+                        ...prev,
+                        data.peerId
+                    ]);
+            }
+        };
+    }, [
+        socket,
+        peer
+    ]);
+    const approveUser = (peerId)=>{
+        setPendingUsers((prev)=>prev.filter((id)=>id !== peerId));
+        if (socket) {
+            socket.send(JSON.stringify({
+                type: "approved",
+                peerId
+            }));
+        } else {
+            console.warn("⚠️ WebSocket is not connected, cannot send approval.");
+        }
+    };
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
         if (!meetingId) return;
         const websocketURL = ("TURBOPACK compile-time value", "https://streamlink-837q.onrender.com") || "ws://localhost:8000";
@@ -192,59 +220,75 @@ const MeetingPage = ()=>{
         setMeetingLink(`${frontendURL}/meeting/${meetingId}`);
         const userPeerId = Math.random().toString(36).substring(7);
         const newSocket = new WebSocket(`${websocketURL}/ws/${meetingId}/${userPeerId}`);
-        setSocket(newSocket);
-        navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true
-        }).then((stream)=>{
-            localStream = stream;
-            if (myVideoRef.current) {
-                myVideoRef.current.srcObject = stream;
-            }
-        }).catch((error)=>console.error("Camera/Microphone Error:", error));
-        const newPeer = new __TURBOPACK__imported__module__$5b$externals$5d2f$peerjs__$5b$external$5d$__$28$peerjs$2c$__cjs$29$__["default"]();
-        setPeer(newPeer);
-        newPeer.on("open", (id)=>{
-            console.log(`Peer ID: ${id}`);
+        newSocket.onopen = ()=>{
+            console.log("✅ WebSocket Connected!");
             newSocket.send(JSON.stringify({
                 type: "new-user",
-                peerId: id
+                peerId: userPeerId
             }));
-        });
-        newPeer.on("call", (call)=>{
-            console.log("Answering incoming call...");
-            call.answer(localStream);
-            call.on("stream", (remoteStream)=>{
-                console.log("Received Remote Stream");
-                addRemoteVideo(call.peer, remoteStream);
-            });
-        });
+        };
         newSocket.onmessage = (event)=>{
             const data = JSON.parse(event.data);
-            console.log("WebSocket Message:", data);
-            if (data.type === "new-user" && data.peerId !== newPeer.id) {
-                console.log(`New participant joined: ${data.peerId}`);
-                callUser(data.peerId);
+            console.log("📩 WebSocket Message:", data);
+            if (data.type === "new-user" && data.peerId !== userPeerId) {
+                console.log(`🔔 New participant joined: ${data.peerId}`);
+                callUser(data.peerId); // ✅ Ensure we call the new user
             }
         };
+        setSocket(newSocket);
         return ()=>{
             newSocket.close();
-            newPeer.destroy();
         };
     }, [
         meetingId
     ]);
-    const callUser = (remotePeerId)=>{
-        if (!peer || !localStream) return;
-        console.log(`Calling user: ${remotePeerId}`);
-        const call = peer.call(remotePeerId, localStream);
-        call.on("stream", (remoteStream)=>{
-            console.log("Received Remote Stream");
-            addRemoteVideo(remotePeerId, remoteStream);
+    // ✅ Move getUserMedia() to a separate effect so it only runs once
+    (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
+        if (localStream || myVideoRef.current?.srcObject) return; // ✅ Prevent multiple calls
+        navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true
+        }).then((stream)=>{
+            setLocalStream(stream);
+            if (myVideoRef.current) {
+                myVideoRef.current.srcObject = stream;
+            }
+        }).catch((error)=>console.error("❌ Camera/Microphone Error:", error));
+    }, []); // ✅ Only runs once
+    (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
+        const newPeer = new __TURBOPACK__imported__module__$5b$externals$5d2f$peerjs__$5b$external$5d$__$28$peerjs$2c$__cjs$29$__["default"](); // ✅ Initialize PeerJS
+        setPeer(newPeer);
+        newPeer.on("open", (id)=>{
+            console.log(`🎯 Peer ID: ${id}`);
         });
-    };
+        return ()=>{
+            newPeer.destroy(); // ✅ Cleanup on unmount
+        };
+    }, []); // ✅ Empty dependency array ensures it runs only once
+    (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
+        if (!peer || !localStream) return;
+        peer.on("call", (call)=>{
+            console.log("📞 Answering incoming call...");
+            call.answer(localStream); // ✅ Ensure we send our stream
+            call.on("stream", (remoteStream)=>{
+                console.log("📹 Received Remote Stream");
+                addRemoteVideo(call.peer, remoteStream);
+            });
+            call.on("error", (err)=>{
+                console.error("❌ Call Error:", err);
+            });
+        });
+        return ()=>{
+            peer.off("call"); // ✅ Cleanup event listener
+        };
+    }, [
+        peer,
+        localStream
+    ]);
+    // ✅ Runs when `peer` or `localStream` changes
     const addRemoteVideo = (peerId, stream)=>{
-        console.log(`Adding video for: ${peerId}`);
+        console.log(`📺 Adding video for: ${peerId}`);
+        // ✅ Check if video already exists
         if (!remoteVideosRef.current[peerId]) {
             const videoElement = document.createElement("video");
             videoElement.srcObject = stream;
@@ -255,6 +299,18 @@ const MeetingPage = ()=>{
             remoteVideosRef.current[peerId] = videoElement;
         }
     };
+    const callUser = (remotePeerId)=>{
+        if (!peer || !localStream) return;
+        console.log(`📞 Calling user: ${remotePeerId}`);
+        const call = peer.call(remotePeerId, localStream);
+        call.on("stream", (remoteStream)=>{
+            console.log("📹 Received Remote Stream");
+            addRemoteVideo(remotePeerId, remoteStream);
+        });
+        call.on("error", (err)=>{
+            console.error("❌ Call Error:", err);
+        });
+    };
     const copyLink = ()=>{
         if (meetingLink) {
             navigator.clipboard.writeText(meetingLink);
@@ -263,23 +319,20 @@ const MeetingPage = ()=>{
         }
     };
     const toggleMute = ()=>{
-        if (!myVideoRef.current || !myVideoRef.current.srcObject) return;
-        const stream = myVideoRef.current.srcObject;
-        const audioTracks = stream.getAudioTracks();
-        if (audioTracks.length > 0) {
-            audioTracks[0].enabled = !audioTracks[0].enabled;
-            setIsMuted(!audioTracks[0].enabled);
-        }
+        if (!localStream) return;
+        localStream.getAudioTracks().forEach((track)=>{
+            track.enabled = !track.enabled;
+        });
+        setIsMuted(!isMuted);
     };
     const toggleVideo = ()=>{
-        if (!myVideoRef.current || !myVideoRef.current.srcObject) return;
-        const stream = myVideoRef.current.srcObject;
-        const videoTracks = stream.getVideoTracks();
-        if (videoTracks.length > 0) {
-            videoTracks[0].enabled = !videoTracks[0].enabled;
-            setIsVideoOff(!videoTracks[0].enabled);
-        }
+        if (!localStream) return;
+        localStream.getVideoTracks().forEach((track)=>{
+            track.enabled = !track.enabled;
+        });
+        setIsVideoOff(!isVideoOff);
     };
+    // ✅ Leave Meeting
     const leaveMeeting = ()=>{
         if (socket) socket.close();
         if (peer) peer.destroy();
@@ -296,7 +349,7 @@ const MeetingPage = ()=>{
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/meeting/[id].tsx",
-                lineNumber: 135,
+                lineNumber: 196,
                 columnNumber: 7
             }, this),
             meetingLink && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -307,7 +360,7 @@ const MeetingPage = ()=>{
                         children: "Share this link:"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 139,
+                        lineNumber: 200,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -318,7 +371,7 @@ const MeetingPage = ()=>{
                                 children: meetingLink
                             }, void 0, false, {
                                 fileName: "[project]/pages/meeting/[id].tsx",
-                                lineNumber: 141,
+                                lineNumber: 202,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -327,19 +380,19 @@ const MeetingPage = ()=>{
                                 children: copied ? "Copied!" : "Copy"
                             }, void 0, false, {
                                 fileName: "[project]/pages/meeting/[id].tsx",
-                                lineNumber: 142,
+                                lineNumber: 203,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 140,
+                        lineNumber: 201,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/meeting/[id].tsx",
-                lineNumber: 138,
+                lineNumber: 199,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -352,7 +405,7 @@ const MeetingPage = ()=>{
                         className: "w-48 h-32 border rounded-lg"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 153,
+                        lineNumber: 214,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -360,13 +413,13 @@ const MeetingPage = ()=>{
                         className: "flex space-x-2"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 154,
+                        lineNumber: 215,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/meeting/[id].tsx",
-                lineNumber: 152,
+                lineNumber: 213,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -378,7 +431,7 @@ const MeetingPage = ()=>{
                         children: isMuted ? "Unmute Mic" : "Mute Mic"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 157,
+                        lineNumber: 220,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -387,7 +440,7 @@ const MeetingPage = ()=>{
                         children: isVideoOff ? "Turn On Camera" : "Turn Off Camera"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 164,
+                        lineNumber: 227,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -396,19 +449,61 @@ const MeetingPage = ()=>{
                         children: "Leave Call"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 171,
+                        lineNumber: 234,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/meeting/[id].tsx",
-                lineNumber: 156,
+                lineNumber: 219,
                 columnNumber: 7
+            }, this),
+            isAdmin && pendingUsers.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                className: "absolute top-10 right-10 bg-white p-4 rounded-lg shadow-lg",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
+                        className: "text-lg font-bold",
+                        children: "Approval Requests"
+                    }, void 0, false, {
+                        fileName: "[project]/pages/meeting/[id].tsx",
+                        lineNumber: 243,
+                        columnNumber: 11
+                    }, this),
+                    pendingUsers.map((peerId)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                            className: "flex justify-between items-center",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
+                                    children: peerId
+                                }, void 0, false, {
+                                    fileName: "[project]/pages/meeting/[id].tsx",
+                                    lineNumber: 246,
+                                    columnNumber: 15
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
+                                    onClick: ()=>approveUser(peerId),
+                                    className: "bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600",
+                                    children: "Approve"
+                                }, void 0, false, {
+                                    fileName: "[project]/pages/meeting/[id].tsx",
+                                    lineNumber: 247,
+                                    columnNumber: 15
+                                }, this)
+                            ]
+                        }, peerId, true, {
+                            fileName: "[project]/pages/meeting/[id].tsx",
+                            lineNumber: 245,
+                            columnNumber: 13
+                        }, this))
+                ]
+            }, void 0, true, {
+                fileName: "[project]/pages/meeting/[id].tsx",
+                lineNumber: 242,
+                columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/pages/meeting/[id].tsx",
-        lineNumber: 134,
+        lineNumber: 195,
         columnNumber: 5
     }, this);
 };
