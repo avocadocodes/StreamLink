@@ -9,7 +9,7 @@ import os
 from bson import ObjectId
 
 # ✅ Load Environment Variables
-SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")  # Use environment variables
+SECRET_KEY = os.getenv("SECRET_KEY")  
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

@@ -6,8 +6,8 @@ from models import ChatMessage
 from datetime import datetime
 
 signaling_router = APIRouter()
-WEBSOCKET_HOST = os.getenv("WEBSOCKET_HOST", "0.0.0.0")
-WEBSOCKET_PORT = int(os.getenv("WEBSOCKET_PORT", 8000))
+WEBSOCKET_HOST = os.getenv("WEBSOCKET_HOST")
+WEBSOCKET_PORT = int(os.getenv("WEBSOCKET_PORT"))
 
 # Active meetings and participants
 active_meetings: Dict[str, Dict[str, WebSocket]] = {}

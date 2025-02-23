@@ -16,7 +16,7 @@ from fastapi.responses import JSONResponse
 
 # Load Environment Variables
 load_dotenv()
-MONGO_URI = os.getenv("DATABASE_URL", "mongodb://localhost:27017")
+MONGO_URI = os.getenv("DATABASE_URL")
 client = MongoClient(MONGO_URI)
 
 # App Initialization
