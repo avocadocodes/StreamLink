@@ -572,7 +572,6 @@ var _s = __turbopack_refresh__.signature(), _s1 = __turbopack_refresh__.signatur
 ;
 ;
 ;
-// ✅ Use Axios Instance with Token Interceptor
 const api = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].create({
     baseURL: ("TURBOPACK compile-time value", "http://localhost:8000"),
     withCredentials: true
@@ -594,8 +593,7 @@ const AuthProvider = ({ children })=>{
         "AuthProvider.useEffect": ()=>{
             const token = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$js$2d$cookie$2f$dist$2f$js$2e$cookie$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["default"].get("token");
             if (token) {
-                api.get("/user") // ✅ Use `api.get()` instead of `axios.get()`
-                .then({
+                api.get("/user").then({
                     "AuthProvider.useEffect": (res)=>{
                         console.log("✅ User Data:", res.data);
                         setUser(res.data);
@@ -624,7 +622,6 @@ const AuthProvider = ({ children })=>{
             __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$js$2d$cookie$2f$dist$2f$js$2e$cookie$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["default"].set("token", token, {
                 expires: 7
             });
-            // ✅ Fetch user immediately after login using `api`
             const userRes = await api.get("/user");
             setUser(userRes.data);
             console.log("🔓 Logged in successfully!", userRes.data);
@@ -638,7 +635,7 @@ const AuthProvider = ({ children })=>{
     const logout = ()=>{
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$js$2d$cookie$2f$dist$2f$js$2e$cookie$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["default"].remove("token");
         setUser(null);
-        router.push("/login");
+        router.push("/auth/login");
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(AuthContext.Provider, {
         value: {
@@ -649,7 +646,7 @@ const AuthProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/context/AuthContext.tsx",
-        lineNumber: 88,
+        lineNumber: 86,
         columnNumber: 5
     }, this);
 };

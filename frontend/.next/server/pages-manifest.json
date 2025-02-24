@@ -3,7 +3,5 @@
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
   "/login": "pages/login.js",
-  "/register": "pages/register.js",
-  "/meeting/[id]": "pages/meeting/[id].js",
   "/_error": "pages/_error.js"
 }

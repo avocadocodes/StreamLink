@@ -174,9 +174,8 @@ var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
 ;
 ;
 ;
-// ✅ Use Axios Instance with Token Interceptor
 const api = __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].create({
-    baseURL: ("TURBOPACK compile-time value", "http://localhost:8000/"),
+    baseURL: ("TURBOPACK compile-time value", "http://localhost:8000"),
     withCredentials: true
 });
 api.interceptors.request.use((config)=>{
@@ -194,8 +193,7 @@ const AuthProvider = ({ children })=>{
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
         const token = __TURBOPACK__imported__module__$5b$externals$5d2f$js$2d$cookie__$5b$external$5d$__$28$js$2d$cookie$2c$__esm_import$29$__["default"].get("token");
         if (token) {
-            api.get("/user") // ✅ Use `api.get()` instead of `axios.get()`
-            .then((res)=>{
+            api.get("/user").then((res)=>{
                 console.log("✅ User Data:", res.data);
                 setUser(res.data);
             }).catch((error)=>{
@@ -219,7 +217,6 @@ const AuthProvider = ({ children })=>{
             __TURBOPACK__imported__module__$5b$externals$5d2f$js$2d$cookie__$5b$external$5d$__$28$js$2d$cookie$2c$__esm_import$29$__["default"].set("token", token, {
                 expires: 7
             });
-            // ✅ Fetch user immediately after login using `api`
             const userRes = await api.get("/user");
             setUser(userRes.data);
             console.log("🔓 Logged in successfully!", userRes.data);
@@ -233,7 +230,7 @@ const AuthProvider = ({ children })=>{
     const logout = ()=>{
         __TURBOPACK__imported__module__$5b$externals$5d2f$js$2d$cookie__$5b$external$5d$__$28$js$2d$cookie$2c$__esm_import$29$__["default"].remove("token");
         setUser(null);
-        router.push("/login");
+        router.push("/auth/login");
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(AuthContext.Provider, {
         value: {
@@ -244,7 +241,7 @@ const AuthProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/context/AuthContext.tsx",
-        lineNumber: 88,
+        lineNumber: 86,
         columnNumber: 5
     }, this);
 };

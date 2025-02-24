@@ -84,7 +84,7 @@ export default function Home() {
         <>
           <p style={{ color: "red" }}>🚫 You must log in to start or join a meeting.</p>
           <button
-            onClick={() => router.push("/login")} // ✅ Redirect to /login
+            onClick={() => router.push("login")} // ✅ Redirect to /login
             style={{
               marginTop: "20px",
               padding: "10px 20px",

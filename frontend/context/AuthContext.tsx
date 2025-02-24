@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     Cookies.remove("token");
     setUser(null);
-    router.push("/login");
+    router.push("/auth/login");
   };
 
   return (

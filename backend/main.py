@@ -25,13 +25,15 @@ router = APIRouter()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        FRONTEND_URL,
-        "https://streamlink-sigma.vercel.app",
-    ], 
-    allow_credentials=True, 
-    allow_methods=["*"],
-    allow_headers=["*"],
+        "http://localhost:3000",  # ✅ Local frontend
+        "http://127.0.0.1:3000",  # ✅ Alternative localhost notation
+    ],
+    allow_credentials=True,  
+    allow_methods=["*"],  
+    allow_headers=["Authorization", "Content-Type", "X-CSRF-Token"],  # ✅ Explicitly allow "Authorization"
 )
+
+
 logging.basicConfig(level=logging.DEBUG)
 
 class StartMeetingRequest(BaseModel):
@@ -41,13 +43,19 @@ class StartMeetingRequest(BaseModel):
 app.include_router(auth_router)  
 app.include_router(signaling_router)
 app.include_router(router)
+
 @app.middleware("http")
 async def add_cors_headers(request, call_next):
     response = await call_next(request)
-    response.headers["Access-Control-Allow-Origin"] = "https://streamlink-sigma.vercel.app"
+    allowed_origin = request.headers.get("Origin", "http://localhost:3000")
+
+    response.headers["Access-Control-Allow-Origin"] = allowed_origin
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, X-CSRF-Token"
+    
     return response
+
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
     logging.error(f"Internal Server Error: {exc}")  
