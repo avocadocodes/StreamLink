@@ -15,12 +15,14 @@ import logging
 from fastapi.responses import JSONResponse
 
 load_dotenv()
+
+app = FastAPI()
+router = APIRouter()
 MONGO_URI = os.getenv("DATABASE_URL")
 client = MongoClient(MONGO_URI)
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 
-app = FastAPI()
-router = APIRouter()
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -39,10 +41,6 @@ logging.basicConfig(level=logging.DEBUG)
 class StartMeetingRequest(BaseModel):
     meeting_id: str
     username: str
-
-app.include_router(auth_router)  
-app.include_router(signaling_router)
-app.include_router(router)
 
 @app.middleware("http")
 async def add_cors_headers(request, call_next):
@@ -106,3 +104,8 @@ def read_root():
 
 if __name__ == "__main__":
     multiprocessing.set_start_method("spawn")
+    
+print("✅ Registering routers...")
+app.include_router(auth_router)  
+app.include_router(signaling_router)
+app.include_router(router)

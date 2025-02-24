@@ -635,7 +635,7 @@ const AuthProvider = ({ children })=>{
     const logout = ()=>{
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$js$2d$cookie$2f$dist$2f$js$2e$cookie$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["default"].remove("token");
         setUser(null);
-        router.push("/login");
+        router.push("/auth/login");
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(AuthContext.Provider, {
         value: {
@@ -725,7 +725,7 @@ const MeetingPage = ()=>{
         "MeetingPage.useEffect": ()=>{
             if (!meetingId || !user) return; // ✅ Ensure user is available before using it
             const websocketURL = ("TURBOPACK compile-time value", "http://localhost:8000") || "ws://localhost:8000";
-            const frontendURL = ("TURBOPACK compile-time value", "http://localhost:3001") || "http://localhost:3000";
+            const frontendURL = ("TURBOPACK compile-time value", "http://localhost:3000") || "http://localhost:3000";
             setMeetingLink(`${frontendURL}/meeting/${meetingId}`);
             const userPeerId = Math.random().toString(36).substring(7);
             const newSocket = new WebSocket(`${websocketURL}/ws/${meetingId}/${userPeerId}`);
