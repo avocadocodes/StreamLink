@@ -27,6 +27,8 @@ FRONTEND_URL = os.getenv("FRONTEND_URL")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        FRONTEND_URL,
+       "https://streamlink-sigma.vercel.app/"
         "http://localhost:3000",  # ✅ Local frontend
         "http://127.0.0.1:3000",  # ✅ Alternative localhost notation
     ],
@@ -45,7 +47,7 @@ class StartMeetingRequest(BaseModel):
 @app.middleware("http")
 async def add_cors_headers(request, call_next):
     response = await call_next(request)
-    allowed_origin = request.headers.get("Origin", "http://localhost:3000")
+    allowed_origin = request.headers.get("Origin", "http://localhost:3000", FRONTEND_URL, "https://streamlink-sigma.vercel.app/")
 
     response.headers["Access-Control-Allow-Origin"] = allowed_origin
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
@@ -104,7 +106,7 @@ def read_root():
 
 if __name__ == "__main__":
     multiprocessing.set_start_method("spawn")
-    
+
 print("✅ Registering routers...")
 app.include_router(auth_router)  
 app.include_router(signaling_router)
