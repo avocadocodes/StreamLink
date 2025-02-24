@@ -1,4 +1,4 @@
-# **StreamLink : A Video Calling App for SuperSoul**
+# **StreamLink : A Video Calling App*
 
 ## 🚀 **Overview**
 StreamLink is a **full-stack video calling application** similar to Google Meet, built using:
