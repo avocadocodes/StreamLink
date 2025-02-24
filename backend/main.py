@@ -47,12 +47,19 @@ class StartMeetingRequest(BaseModel):
 @app.middleware("http")
 async def add_cors_headers(request, call_next):
     response = await call_next(request)
+    origin = request.headers.get("Origin")
     allowed_origin = [
         os.getenv("FRONTEND_URL"),
         "https://streamlink-sigma.vercel.app",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ]
+    if origin in allowed_origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+    else:
+        response.headers["Access-Control-Allow-Origin"] = (
+            "http://localhost:3000" if os.getenv("ENV") == "development" else "https://streamlink-sigma.vercel.app"
+        )
 
     response.headers["Access-Control-Allow-Origin"] = allowed_origin
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
