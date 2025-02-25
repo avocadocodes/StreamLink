@@ -29,11 +29,11 @@ FRONTEND_URL = FRONTEND_URL.rstrip("/")
 # ✅ CORS Middleware - Ensure it is before the routers!
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        FRONTEND_URL,
-        "https://streamlink-sigma.vercel.app",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
+    allow_origins=[ "*"
+        # FRONTEND_URL,
+        # "https://streamlink-sigma.vercel.app",
+        # "http://localhost:3000",
+        # "http://127.0.0.1:3000",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -47,27 +47,27 @@ class StartMeetingRequest(BaseModel):
     username: str
 
 # ✅ Ensure CORS headers are applied correctly
-@app.middleware("http")
-async def add_cors_headers(request, call_next):
-    response = await call_next(request)
-    origin = request.headers.get("Origin")
+# @app.middleware("http")
+# async def add_cors_headers(request, call_next):
+#     response = await call_next(request)
+#     origin = request.headers.get("Origin")
 
-    allowed_origins = [
-        FRONTEND_URL,
-        "https://streamlink-sigma.vercel.app",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ]
+#     allowed_origins = [
+#         FRONTEND_URL,
+#         "https://streamlink-sigma.vercel.app",
+#         "http://localhost:3000",
+#         "http://127.0.0.1:3000",
+#     ]
 
-    if origin in allowed_origins:
-        response.headers["Access-Control-Allow-Origin"] = origin
-    else:
-        response.headers["Access-Control-Allow-Origin"] = FRONTEND_URL  # Use ENV URL for safety
+#     if origin in allowed_origins:
+#         response.headers["Access-Control-Allow-Origin"] = origin
+#     else:
+#         response.headers["Access-Control-Allow-Origin"] = FRONTEND_URL  # Use ENV URL for safety
 
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, Origin, X-CSRF-Token"
+#     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+#     response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, Origin, X-CSRF-Token"
 
-    return response
+#     return response
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
