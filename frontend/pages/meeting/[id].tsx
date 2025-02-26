@@ -211,7 +211,7 @@ const MeetingPage = () => {
       <h2 className="text-xl font-bold">Meeting ID: {meetingId}</h2>
 
       {meetingLink && (
-        <div className="flex flex-col items-center space-y-2 mt-4 bg-white text-black p-4 rounded-lg shadow-lg">
+        <div className="flex items-center space-x-2 mt-2 bg-gray-300 text-black p-2 rounded-lg shadow-md w-auto">
           <p className="text-lg font-semibold">Share this link:</p>
           <div className="flex items-center space-x-2 border p-2 rounded-md w-full">
             <span className="truncate w-64">{meetingLink}</span>
@@ -222,15 +222,17 @@ const MeetingPage = () => {
         </div>
       )}
 
-      <div className="flex w-full max-w-6xl mt-4r">
-        <div className="flex flex-col w-2/3 items-center">
-          <video ref={myVideoRef} autoPlay muted className="w-full h-[400px] border-2 border-white rounded-lg shadow-lg" />
+<div className="flex w-full max-w-6xl mt-4 space-x-4">
+        {/* Video Section */}
+        <div className="w-1/2 flex flex-col items-center">
+          <video ref={myVideoRef} autoPlay muted className="w-full h-[500px] border-2 border-white rounded-lg shadow-lg" />
           <div id="remote-videos" className="flex flex-wrap gap-2 mt-4"></div>
         </div>
+
         {/* Chat Section */}
-        <div className="w-1/3 bg-gray-100 text-black p-4 shadow-lg rounded-lg">
+        <div className="w-1/2 bg-gray-900 text-white p-4 shadow-lg rounded-lg flex flex-col">
           <h2 className="text-lg font-bold mb-2">Live Chat</h2>
-          <div className="overflow-y-auto h-80 p-2 border text-black bg-white">
+          <div className="flex-1 overflow-y-auto h-[500px] p-2 border text-white bg-gray-800 rounded-md">
             {messages.map((msg, index) => (
               <div key={index} className={`p-1 my-1 ${msg.sender === user.username ? "text-right" : "text-left"}`}>
                 <span className="font-bold">{msg.sender}: </span>
@@ -241,7 +243,7 @@ const MeetingPage = () => {
           <div className="flex mt-2">
             <input
               type="text"
-              className="border p-2 flex-1 rounded-lg"
+              className="border p-2 flex-1 rounded-lg bg-gray-700 text-white"
               placeholder="Type a message..."
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
@@ -251,8 +253,8 @@ const MeetingPage = () => {
             </button>
           </div>
         </div>
-
       </div>
+
       <div className="flex space-x-4 mt-6">
         <button onClick={toggleMute} className="px-4 py-2 bg-gray-500 text-white rounded-md">
           {isMuted ? "Unmute Mic" : "Mute Mic"}

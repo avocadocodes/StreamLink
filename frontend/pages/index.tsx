@@ -6,7 +6,7 @@ import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, setUser, logout } = useAuth();
   const router = useRouter();
   const [meetingId, setMeetingId] = useState("");
   const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -60,14 +60,25 @@ export default function Home() {
       console.error("Error joining meeting:", error);
     }
   };
-  
+  const handleLogout = () => {
+    logout(); // Calls the AuthContext logout function
+    setUser(null); // Ensures the user is reset
+  };
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <nav className="w-full p-4 flex justify-between items-center bg-white shadow-md">
         <h1 className="text-2xl font-semibold text-black">StreamLink</h1>
         <div>
           {user ? (
+            <>
             <p className="text-gray-700">Welcome, {user.username}</p>
+            <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg"
+              >
+                Logout
+              </button>
+              </>
           ) : (
             <>
               <button

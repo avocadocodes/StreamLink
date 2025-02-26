@@ -635,18 +635,19 @@ const AuthProvider = ({ children })=>{
     const logout = ()=>{
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$js$2d$cookie$2f$dist$2f$js$2e$cookie$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["default"].remove("token");
         setUser(null);
-        router.push("/auth/login");
+        router.push("/login");
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(AuthContext.Provider, {
         value: {
             user,
+            setUser,
             login,
             logout
         },
         children: children
     }, void 0, false, {
         fileName: "[project]/context/AuthContext.tsx",
-        lineNumber: 86,
+        lineNumber: 87,
         columnNumber: 5
     }, this);
 };
@@ -959,7 +960,7 @@ const MeetingPage = ()=>{
                 columnNumber: 7
             }, this),
             meetingLink && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "flex flex-col items-center space-y-2 mt-4 bg-white text-black p-4 rounded-lg shadow-lg",
+                className: "flex items-center space-x-2 mt-2 bg-gray-300 text-black p-2 rounded-lg shadow-md w-auto",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                         className: "text-lg font-semibold",
@@ -1002,19 +1003,19 @@ const MeetingPage = ()=>{
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "flex w-full max-w-6xl mt-4r",
+                className: "flex w-full max-w-6xl mt-4 space-x-4",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex flex-col w-2/3 items-center",
+                        className: "w-1/2 flex flex-col items-center",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("video", {
                                 ref: myVideoRef,
                                 autoPlay: true,
                                 muted: true,
-                                className: "w-full h-[400px] border-2 border-white rounded-lg shadow-lg"
+                                className: "w-full h-[500px] border-2 border-white rounded-lg shadow-lg"
                             }, void 0, false, {
                                 fileName: "[project]/pages/meeting/[id].tsx",
-                                lineNumber: 227,
+                                lineNumber: 228,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1022,28 +1023,28 @@ const MeetingPage = ()=>{
                                 className: "flex flex-wrap gap-2 mt-4"
                             }, void 0, false, {
                                 fileName: "[project]/pages/meeting/[id].tsx",
-                                lineNumber: 228,
+                                lineNumber: 229,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 226,
+                        lineNumber: 227,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "w-1/3 bg-gray-100 text-black p-4 shadow-lg rounded-lg",
+                        className: "w-1/2 bg-gray-900 text-white p-4 shadow-lg rounded-lg flex flex-col",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
                                 className: "text-lg font-bold mb-2",
                                 children: "Live Chat"
                             }, void 0, false, {
                                 fileName: "[project]/pages/meeting/[id].tsx",
-                                lineNumber: 232,
+                                lineNumber: 234,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "overflow-y-auto h-80 p-2 border text-black bg-white",
+                                className: "flex-1 overflow-y-auto h-[500px] p-2 border text-white bg-gray-800 rounded-md",
                                 children: messages.map((msg, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: `p-1 my-1 ${msg.sender === user.username ? "text-right" : "text-left"}`,
                                         children: [
@@ -1055,19 +1056,19 @@ const MeetingPage = ()=>{
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/meeting/[id].tsx",
-                                                lineNumber: 236,
+                                                lineNumber: 238,
                                                 columnNumber: 17
                                             }, this),
                                             msg.message
                                         ]
                                     }, index, true, {
                                         fileName: "[project]/pages/meeting/[id].tsx",
-                                        lineNumber: 235,
+                                        lineNumber: 237,
                                         columnNumber: 15
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/pages/meeting/[id].tsx",
-                                lineNumber: 233,
+                                lineNumber: 235,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1075,13 +1076,13 @@ const MeetingPage = ()=>{
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                         type: "text",
-                                        className: "border p-2 flex-1 rounded-lg",
+                                        className: "border p-2 flex-1 rounded-lg bg-gray-700 text-white",
                                         placeholder: "Type a message...",
                                         value: newMessage,
                                         onChange: (e)=>setNewMessage(e.target.value)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/meeting/[id].tsx",
-                                        lineNumber: 242,
+                                        lineNumber: 244,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1090,26 +1091,26 @@ const MeetingPage = ()=>{
                                         children: "Send"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/meeting/[id].tsx",
-                                        lineNumber: 249,
+                                        lineNumber: 251,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/meeting/[id].tsx",
-                                lineNumber: 241,
+                                lineNumber: 243,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 231,
+                        lineNumber: 233,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/meeting/[id].tsx",
                 lineNumber: 225,
-                columnNumber: 7
+                columnNumber: 1
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "flex space-x-4 mt-6",
@@ -1120,7 +1121,7 @@ const MeetingPage = ()=>{
                         children: isMuted ? "Unmute Mic" : "Mute Mic"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 257,
+                        lineNumber: 259,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1129,7 +1130,7 @@ const MeetingPage = ()=>{
                         children: isVideoOff ? "Turn On Camera" : "Turn Off Camera"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 260,
+                        lineNumber: 262,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1138,13 +1139,13 @@ const MeetingPage = ()=>{
                         children: "Leave Call"
                     }, void 0, false, {
                         fileName: "[project]/pages/meeting/[id].tsx",
-                        lineNumber: 263,
+                        lineNumber: 265,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/meeting/[id].tsx",
-                lineNumber: 256,
+                lineNumber: 258,
                 columnNumber: 7
             }, this)
         ]
